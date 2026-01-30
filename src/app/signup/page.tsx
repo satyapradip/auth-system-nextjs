@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -13,6 +13,15 @@ export default function SignupPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  useEffect(() => {
+    if(user.email.length > 0 && user.password.length > 0 && user.name.length > 0) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
 
   const onSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,10 +31,10 @@ export default function SignupPage() {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError("");
-      const response = await axios.post("/api/users/signup", user);
+    try { 
+      setLoading(true); 
+      setError("");  
+      const response = await axios.post("/api/users/signup", user); 
       console.log("Signup success", response.data);
       router.push("/login");
     } catch (error: any) {
@@ -113,7 +122,7 @@ export default function SignupPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={buttonDisabled || loading}
             className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
           >
             {loading ? (
@@ -125,7 +134,7 @@ export default function SignupPage() {
                 Creating account...
               </span>
             ) : (
-              "Sign Up"
+              buttonDisabled ? "Fill all fields" : "Sign Up"
             )}
           </button>
         </form>
