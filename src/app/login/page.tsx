@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useState, FormEvent } from "react";
+import { useState, useEffect } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,12 +12,31 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
-  const onLogin = async (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (user.email.length > 0 && user.password.length > 0) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
+
+  const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!user.email || !user.password) {
       setError("Please fill in all fields");
+      return;
+    }
+
+    if (user.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (!user.email.includes("@")) {
+      setError("Invalid email address");
       return;
     }
 
@@ -94,8 +113,8 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
+            disabled={buttonDisabled || loading}
+            className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -106,7 +125,7 @@ export default function LoginPage() {
                 Signing in...
               </span>
             ) : (
-              "Sign In"
+              buttonDisabled ? "Fill all fields" : "Sign In"
             )}
           </button>
         </form>
