@@ -7,7 +7,7 @@ import { useState, FormEvent, useEffect } from "react";
 export default function SignupPage() {
   const router = useRouter();
   const [user, setUser] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -16,7 +16,7 @@ export default function SignupPage() {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
-    if(user.email.length > 0 && user.password.length > 0 && user.name.length > 0) {
+    if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
@@ -26,7 +26,7 @@ export default function SignupPage() {
   const onSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!user.name || !user.email || !user.password) {
+    if (!user.username || !user.email || !user.password) {
       setError("Please fill in all fields");
       return;
     }
@@ -68,16 +68,16 @@ export default function SignupPage() {
           {/* Name Input */}
           <div>
             <label 
-              htmlFor="name" 
+              htmlFor="username" 
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Full Name
             </label>
             <input
               type="text"
-              id="name"
-              value={user.name}
-              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              id="username"
+              value={user.username}
+              onChange={(e) => setUser({ ...user, username: e.target.value })}
               placeholder="Akash Pal"
               className="w-full px-4 py-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200 outline-none"
             />
